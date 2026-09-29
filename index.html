@@ -949,7 +949,11 @@ function assignMath(g,R){
   const p=shuffle(pool(state.level),r);
   const per=Math.max(1,Math.min(state.per,Math.floor(p.length/K)));
   const answers=g.palette.map((_,k)=>p.slice(k*per,k*per+per).sort((a,b)=>a-b));
-  R.regions.forEach(reg=>{const a=answers[reg.color];reg.ans=a[Math.floor(r()*a.length)];reg.eq=reg.span>=2?makeEq(reg.ans,state.level,r):String(reg.ans)});
+  R.regions.forEach(reg=>{
+    // a one-square field shows the number itself: prefer answers of at most two digits there (100 sticks out of the square)
+    const all=answers[reg.color],short=all.filter(v=>v<100);
+    const a=reg.span===1&&short.length?short:all;
+    reg.ans=a[Math.floor(r()*a.length)];reg.eq=reg.span>=2?makeEq(reg.ans,state.level,r):String(reg.ans)});
   return answers;
 }
 
